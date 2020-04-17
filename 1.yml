@@ -1,0 +1,15 @@
+---
+- name: install soft
+  hosts: war
+  become: yes
+
+  tasks:
+  - name: Ensure soft  package is present
+    apt:
+      name: tomcat
+      state: present
+   tasks:
+    - name: Ensure soft  package is present
+     apt:
+       name: default-jdk
+       state: present
