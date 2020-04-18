@@ -1,15 +1,52 @@
 ---
-- name: install soft
+
+- name: установка пакетов для war сервера
   hosts: war
   become: yes
 
   tasks:
-  - name: Ensure soft  package is present
+  - name: Run the equivalent of "apt-get update" as a separate step
     apt:
-      name: tomcat
+      update_cache: yes
+
+  - name: Ensure tomcat  package is present
+    apt:
+      name: tomcat9
       state: present
-   tasks:
-    - name: Ensure soft  package is present
-     apt:
-       name: default-jdk
-       state: present
+
+  - name: Ensure java  package is present
+    apt:
+      name: default-jdk
+      state: present
+
+  - name: Ensure maven package is present
+    apt:
+      name: maven
+      state: present
+
+  - name: Ensure git  package is present
+    apt:
+      name: git
+      state: present
+
+  - name: Clone bitbucket repo
+    git:
+      repo: https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
+      dest: /home/lab1
+      version: master
+
+  - name: maven package
+    shell: mvn package
+    args:
+      chdir: /home/lab1
+ 
+  - name: Create a symbolic link war
+    file:
+      src: /home/lab1/target/hello-1.0.war
+      dest: /var/lib/tomcat9/webapps
+      state: hard
+  
+  - name: Restart tomcat9
+    service:
+      name: tomcat9
+      state: restarted
