@@ -51,12 +51,12 @@
       name: tomcat9
       state: restarted
 
-  - name:  копируем с war на prod
-    synchronize:
+  - name: копируем с war на мастер
+    fetch:
       src: /home/lab1/target/hello-1.0.war
-      dest: ec2-13-49-75-235.eu-north-1.compute.amazonaws.com/var/lib/tomcat9/webapps
-    delegate_to: ec2-13-49-0-193.eu-north-1.compute.amazonaws.com
-    
+      dest: /tmp/   
+      flat: yes
+ 
 - name: установка пакетов для prod сервера
   hosts: prod
   become: yes
@@ -75,6 +75,11 @@
     apt:
       name: default-jdk
       state: present
+
+  - name: Копируем с мастер на prod
+    copy:
+      src: /tmp/hello-1.0.war
+      dest: /var/lib/tomcat9/webapps
 
   - name: Restart tomcat9
     service:
